@@ -1,2 +1,19 @@
-# Lesson-Schedule-Generator
-快速生成你的课程时间表并导入系统日历 / A quick way to generate lesson schedule for your calendar app in system.
+# 日历课程计划生成器
+
+快速生成你的课程时间表并导入系统日历
+
+#### 1.使用方法
+
+###### 1.1 （Releases）发行版
+
+打开文件“课表配置.txt”，按照预写好的课程模板，模仿填写信息即可。需要添加更多课程时，复制粘贴已有课程，更改时间和名字等项目即可添加更多课程。
+
+最后，运行主程序“日历课程计划生成器”即可生成日历计划文件，文件名为<u>你配置的日历名称</u>。
+
+###### 1.2 源代码
+
+如果你下载的是源代码，你需要使用 cmd / PowerShell (Windows) 或者 终端(macOS / Linux) 运行。运行命令：python3 到程序目录的绝对路径/Lesson_Schedule_Generator.py
+
+小技巧：打开终端，输入python3并按空格，最后将文件拖入终端，按回车
+
+**<u>程序不支持python2！</u>**
