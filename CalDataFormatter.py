@@ -132,9 +132,12 @@ def calculate_RRULE(hint):
 # Added code
 
 
-def add_event(cal, subject, day_to_start, day_to_end, description, class_room, repeat_rule_hint=None, remind_before=0):
+def add_event(cal, subject, day_to_start, day_to_end, description, class_room, teacher, email_addr,
+              repeat_rule_hint=None, remind_before=0):
     """
     向Calendar日历对象添加事件的方法
+    :param teacher: 发起人（老师）
+    :param email_addr: 发起人（老师）邮件地址
     :param remind_before: 在开始前几分钟提醒
     :param repeat_rule_hint: 学期开始时间与持续周数
     :param cal: calender日历实例
@@ -155,11 +158,11 @@ def add_event(cal, subject, day_to_start, day_to_end, description, class_room, r
 
     cal.add_event(remind_before,
                   SUMMARY=subject,
-                  ORGANIZER="CN=FelixWither:mailto:nobody@gmail.com",
+                  ORGANIZER="CN=%s:mailto:%s" % (teacher, email_addr),
                   DTSTART=dt_start,
                   DTEND=dt_end,
                   DTSTAMP=create_time,
-                  UID=uuid.uuid4(),  # "{}-11@appgenix-software.com".format(create_time),
+                  UID=uuid.uuid4(),
                   SEQUENCE="0",
                   CREATED=create_time,
                   DESCRIPTION=description,
@@ -191,6 +194,8 @@ def add_curriculum(cal, curriculum):
     description = ''
     class_room = ''
     class_length = 0
+    teacher = ''
+    email_addr = ''
     except_week = []
     remind_before = 0
 
@@ -205,6 +210,10 @@ def add_curriculum(cal, curriculum):
             description = curriculum[detail]
         elif detail == 'class_room':
             class_room = curriculum[detail]
+        elif detail == 'teacher':
+            teacher = curriculum[detail]
+        elif detail == 'email_addr':
+            email_addr = curriculum[detail]
         elif detail == 'class_length':
             class_length = curriculum[detail]
         elif detail == 'except_week':
@@ -232,6 +241,8 @@ def add_curriculum(cal, curriculum):
                       day_to_end=shiftedEndDate,
                       description=description,
                       class_room=class_room,
+                      teacher=teacher,
+                      email_addr=email_addr,
                       repeat_rule_hint=[shiftedRepeatStartDate, interval],
                       remind_before=remind_before)
         shiftedRepeatStartDate += datetime.timedelta(weeks=interval + 1)
