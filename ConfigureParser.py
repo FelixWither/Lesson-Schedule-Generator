@@ -1,23 +1,24 @@
 # -*-coding:utf-8-*-
-import re
-import datetime
+from re import match
+from datetime import datetime
+from datetime import timedelta
 import sys
-import os
+from os import path
 
 
 conf_sequences = [{}]
-weekOne: datetime.datetime
+weekOne: datetime
 
 
 def str_to_weekday(str):
     class Weekday:
-        monday = weekOne - datetime.timedelta(days=weekOne.weekday())
-        tuesday = weekOne - datetime.timedelta(days=weekOne.weekday() - 1)
-        wednesday = weekOne - datetime.timedelta(days=weekOne.weekday() - 2)
-        thursday = weekOne - datetime.timedelta(days=weekOne.weekday() - 3)
-        friday = weekOne - datetime.timedelta(days=weekOne.weekday() - 4)
-        saturday = weekOne - datetime.timedelta(days=weekOne.weekday() - 5)
-        sunday = weekOne - datetime.timedelta(days=weekOne.weekday() - 6)
+        monday = weekOne - timedelta(days=weekOne.weekday())
+        tuesday = weekOne - timedelta(days=weekOne.weekday() - 1)
+        wednesday = weekOne - timedelta(days=weekOne.weekday() - 2)
+        thursday = weekOne - timedelta(days=weekOne.weekday() - 3)
+        friday = weekOne - timedelta(days=weekOne.weekday() - 4)
+        saturday = weekOne - timedelta(days=weekOne.weekday() - 5)
+        sunday = weekOne - timedelta(days=weekOne.weekday() - 6)
     if str == '周一':
         return Weekday.monday
     elif str == '周二':
@@ -37,7 +38,7 @@ def str_to_weekday(str):
 def string_to_relative_date(str):
     date = str.split(" ")
     date[1] = date[1].split(":")
-    hrs = datetime.timedelta(hours=int(date[1][0])) + datetime.timedelta(minutes=int(date[1][1]))
+    hrs = timedelta(hours=int(date[1][0])) + timedelta(minutes=int(date[1][1]))
     date = str_to_weekday(date[0]) + hrs
     return date
 
@@ -47,8 +48,8 @@ def string_to_abs_date(str):
     date[0] = date[0].split("-")
     date[1] = date[1].split(":")
 
-    hrs = datetime.timedelta(hours=int(date[1][0])) + datetime.timedelta(minutes=int(date[1][1]))
-    date = datetime.datetime(int(date[0][0]), int(date[0][1]), int(date[0][2])) + hrs
+    hrs = timedelta(hours=int(date[1][0])) + timedelta(minutes=int(date[1][1]))
+    date = datetime(int(date[0][0]), int(date[0][1]), int(date[0][2])) + hrs
     return date
 
 
@@ -57,7 +58,7 @@ def formatString(str):
 
 
 def formatData(str):
-    space_end_index = re.match(r'( *)', str).end()
+    space_end_index = match(r'( *)', str).end()
     return str[space_end_index:]
 
 repeat_count = 0
@@ -168,18 +169,18 @@ def parse():
     global counter
     global repeat_count
     if getattr(sys, 'frozen', False):
-        absPath = os.path.dirname(os.path.abspath(sys.executable))
+        absPath = path.dirname(path.abspath(sys.executable))
     elif __file__:
-        absPath = os.path.dirname(os.path.abspath(__file__))
-    file = open(absPath + '/课表配置.txt', 'r')
+        absPath = path.dirname(path.abspath(__file__))
+    file = open(absPath + '/课表配置.txt', 'r', encoding='utf-8')
     line = file.readline()
     while line:
         line = strip_comment(line)
-        matched = re.match(r'(.*)[\u4e00-\u9fa5]:', line)
+        matched = match(r'(.*)[\u4e00-\u9fa5]:', line)
         if matched is None:
             line = line.replace(":", "")
-            if re.match(r'(.*)[a-z]', line) is not None:
-                if switch(re.match(r'(.*)[a-z]', line).group(), counter, "") == "end":
+            if match(r'(.*)[a-z]', line) is not None:
+                if switch(match(r'(.*)[a-z]', line).group(), counter, "") == "end":
                     counter += 1 + repeat_count
                     repeat_count = 0
             line = file.readline()

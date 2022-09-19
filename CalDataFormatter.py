@@ -1,8 +1,10 @@
 # -*-coding:utf-8-*-
 import datetime
 import sys
-import os
-import uuid
+from os import path
+from os import system
+from os import name as os_name
+from uuid import uuid4
 
 weekOne: datetime.datetime
 
@@ -33,7 +35,7 @@ class Event:
                 self.event_text += "%s;%s\n" % (item, data)
         if self.remind_before > 0:
             self.event_text += "BEGIN:VALARM\n"
-            self.alarm_uuid = uuid.uuid4()
+            self.alarm_uuid = uuid4()
             self.event_text += "X-WR-ALARMUID:%s\n" % self.alarm_uuid
             self.event_text += "UID:%s\n" % self.alarm_uuid
             self.event_text += "TRIGGER:-PT%sM\n" % self.remind_before
@@ -77,22 +79,26 @@ class Calendar:
         self.__calendar_text__ += "END:VCALENDAR"
         return self.__calendar_text__
 
-    def save_as_ics_file(self):
+    @staticmethod
+    def get_abs_path():
         if getattr(sys, 'frozen', False):
-            absPath = os.path.dirname(os.path.abspath(sys.executable))
+            return path.dirname(path.abspath(sys.executable))
         elif __file__:
-            absPath = os.path.dirname(os.path.abspath(__file__))
+            return path.dirname(path.abspath(__file__))
+
+    def save_as_ics_file(self):
         ics_text = self.get_ics_text()
+        absPath = self.get_abs_path()
         open(absPath + "/%s.ics" % self.calendar_name, "w", encoding="utf8").write(ics_text)  # 使用utf8编码生成ics
         # 文件，否则日历软件打开是乱码
-        print('================================================================================')
-        print('                             日历日程表生成完成！')
-        print('                              请到程序目录查看')
-        print('                           文件名是你设置的日历名称')
-        print('================================================================================')
 
     def open_ics_file(self):
-        os.system("%s.ics" % self.calendar_name)
+        os_type = os_name
+        absPath = self.get_abs_path()
+        if os_type == 'nt':
+            system(absPath + "/%s.ics" % self.calendar_name)
+        elif os_type == 'posix':
+            system("open %s/%s.ics" % (absPath, self.calendar_name))
 
 
 # Added code
@@ -162,7 +168,7 @@ def add_event(cal, subject, day_to_start, day_to_end, description, class_room, t
                   DTSTART=dt_start,
                   DTEND=dt_end,
                   DTSTAMP=create_time,
-                  UID=uuid.uuid4(),
+                  UID=uuid4(),
                   SEQUENCE="0",
                   CREATED=create_time,
                   DESCRIPTION=description,
